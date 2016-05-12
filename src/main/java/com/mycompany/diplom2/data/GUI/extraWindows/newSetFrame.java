@@ -5,15 +5,16 @@
 package com.mycompany.diplom2.data.GUI.extraWindows;
 
 import com.mycompany.diplom2.data.DataService;
-import com.mycompany.diplom2.data.GUI.CustomTableModel;
 import com.mycompany.diplom2.data.Sensors;
+import java.awt.event.ActionEvent;
+import java.awt.event.ItemEvent;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Vector;
-import javax.swing.JCheckBox;
-import javax.swing.JTable;
+import javax.swing.DefaultCellEditor;
+import javax.swing.JComboBox;
+import javax.swing.event.ChangeEvent;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableModel;
+import javax.swing.table.TableColumn;
+
 
 /**
  *
@@ -24,33 +25,110 @@ public class newSetFrame extends javax.swing.JFrame {
     /**
      * Creates new form newSetFrame
      */
+    Sensors[] allSensors, choosenSensors;
+    Boolean[] selection;
+    
     public newSetFrame() throws SQLException {
         initComponents();
-        
+        backButton.setVisible(false);
         DataService<Sensors> ds = new DataService(Sensors.class);
-        Sensors[] allSensors = ds.getAllAsArray();
-        ArrayList<Object[]> list = new ArrayList<Object[]>();
-        list.add(allSensors);
+        allSensors = ds.getAllAsArray();
         int countRow = allSensors.length;
-        Boolean[] select = new Boolean[countRow];
-        for(int i =0; i<countRow; i++) select[i] = true;
-        list.add(select);
-        String[] columnNames = {"Сенсор","Выбрать"};
-        Class[] types = {Sensors.class,Boolean.class};
-        Boolean[] canEdit = {true, true};
-        TableModel tm = new CustomTableModel<Sensors>(list, columnNames, types);
-        chooseTable.setModel(tm);
-        
-        
-//        DefaultTableModel model = (DefaultTableModel)chooseTable.getModel();
-//        DataService<Sensors> ds = new DataService(Sensors.class);
-//        Sensors[] allSensors = ds.getAllAsArray();
-//        model.setColumnCount(0);
-//        model.addColumn("Сенсор", allSensors);
-//        model.addColumn("Выбрать");
+        selection = new Boolean[countRow];
+        for(int i =0; i<countRow; i++) selection[i] = false;
+        formChooseSensorTable();
         
     }
 
+    public void formChooseSensorTable(){
+        
+             //так не реагирует на клик по checkBox
+
+//        ArrayList<Object[]> list = new ArrayList<Object[]>();
+//        list.add(allSensors);
+//        list.add(selection);
+//        String[] columnNames = {"Сенсор","Выбрать"};
+//        Class[] types = {Sensors.class,Boolean.class};
+//        Boolean[] canEdit = {false, true};
+//        TableModel tm = new CustomTableModel<Sensors>(list, columnNames, types, canEdit);
+//        chooseTable.setModel(tm);
+        
+ // так работает хорошо
+        chooseTable.setModel(new javax.swing.table.DefaultTableModel() {
+            Class[] types = new Class [] {
+                java.lang.Object.class, java.lang.Boolean.class
+            };
+            boolean[] canEdit = new boolean [] {
+                true, true
+            };
+
+            public Class getColumnClass(int columnIndex) {
+                return types [columnIndex];
+            }
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        ((DefaultTableModel)chooseTable.getModel()).addColumn("Сенсор", allSensors);
+        ((DefaultTableModel)chooseTable.getModel()).addColumn("Выбрать", selection);
+    }
+    
+    public void formOfSequenceTable(){
+        chooseTable.setModel(new javax.swing.table.DefaultTableModel() {
+            Class[] types = new Class [] {
+                java.lang.Object.class, java.lang.Object.class
+            };
+            boolean[] canEdit = new boolean [] {
+                true, true
+            };
+
+            public Class getColumnClass(int columnIndex) {
+                return types [columnIndex];
+            }
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        int chooseCount = choosenSensors.length;
+//        JComboBox[] seq = new JComboBox[chooseCount];
+        Object[] nums = new Object[chooseCount];
+        for(int i = 0; i<chooseCount; i++)
+            nums[i] = i+1;
+        JComboBox seq = new JComboBox(nums);
+        
+        
+        seq.addItemListener(new java.awt.event.ItemListener() {
+            Object lastDeselected = new Object();
+            
+            public void killCopy(Object el){
+                int rowCount = chooseTable.getRowCount();
+                for(int i=0; i < rowCount; i++)
+                    if(i != chooseTable.getSelectedRow())
+                        if(el.equals(chooseTable.getModel().getValueAt(i, 1)))
+                            chooseTable.setValueAt(lastDeselected, i, 1);
+                
+            }
+
+            public void itemStateChanged(ItemEvent e) {
+                if(e.getStateChange() == ItemEvent.DESELECTED)
+                    lastDeselected = e.getItem();
+                else
+                    killCopy(e.getItem());
+//                System.out.println(e.paramString());
+            }
+        });
+        
+
+        
+        ((DefaultTableModel)chooseTable.getModel()).addColumn("Сенсор", choosenSensors);
+        ((DefaultTableModel)chooseTable.getModel()).addColumn("Порядковый номер",nums);
+        
+        TableColumn column;
+        column = chooseTable.getColumnModel().getColumn(1);
+        column.setCellEditor(new DefaultCellEditor(seq));
+    }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -59,18 +137,30 @@ public class newSetFrame extends javax.swing.JFrame {
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
+        java.awt.GridBagConstraints gridBagConstraints;
 
         tableTitle = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         chooseTable = new javax.swing.JTable();
         jTextField1 = new javax.swing.JTextField();
         jLabel1 = new javax.swing.JLabel();
-        jButton1 = new javax.swing.JButton();
+        performButton = new javax.swing.JButton();
+        backButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setMinimumSize(new java.awt.Dimension(572, 471));
+        setPreferredSize(new java.awt.Dimension(572, 471));
+        getContentPane().setLayout(new java.awt.GridBagLayout());
 
         tableTitle.setFont(new java.awt.Font("Tahoma", 3, 14)); // NOI18N
         tableTitle.setText("Выбор сенсоров в массив:");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.gridwidth = 3;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.insets = new java.awt.Insets(11, 10, 0, 0);
+        getContentPane().add(tableTitle, gridBagConstraints);
 
         chooseTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -100,54 +190,97 @@ public class newSetFrame extends javax.swing.JFrame {
         });
         jScrollPane1.setViewportView(chooseTable);
 
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 3;
+        gridBagConstraints.gridwidth = 7;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.ipadx = 429;
+        gridBagConstraints.ipady = 323;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(6, 10, 0, 10);
+        getContentPane().add(jScrollPane1, gridBagConstraints);
+
         jTextField1.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jTextField1.setText("Новый набор");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.gridwidth = 4;
+        gridBagConstraints.gridheight = 2;
+        gridBagConstraints.ipadx = 361;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.insets = new java.awt.Insets(11, 2, 0, 10);
+        getContentPane().add(jTextField1, gridBagConstraints);
 
         jLabel1.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jLabel1.setText("Имя набора");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.insets = new java.awt.Insets(14, 10, 0, 0);
+        getContentPane().add(jLabel1, gridBagConstraints);
 
-        jButton1.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
-        jButton1.setText("Готово");
+        performButton.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        performButton.setText("Далее");
+        performButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                performButtonActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 5;
+        gridBagConstraints.gridy = 4;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.insets = new java.awt.Insets(17, 10, 11, 0);
+        getContentPane().add(performButton, gridBagConstraints);
 
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel1)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 367, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addComponent(tableTitle)
-                            .addComponent(jButton1))
-                        .addGap(0, 0, Short.MAX_VALUE)))
-                .addContainerGap())
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel1))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(tableTitle)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 350, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(17, 17, 17)
-                .addComponent(jButton1)
-                .addContainerGap())
-        );
+        backButton.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        backButton.setText("Назад");
+        backButton.setToolTipText("Вернуться к выбору сенсоров");
+        backButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                backButtonActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 4;
+        getContentPane().add(backButton, gridBagConstraints);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void performButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_performButtonActionPerformed
+        // TODO add your handling code here:
+        if(performButton.getText().equals("Далее")){
+            backButton.setVisible(true);
+            int rowCount = selection.length, chooseCount = 0; 
+            for(int i = 0; i< rowCount; i++){
+                selection[i] = (Boolean)((DefaultTableModel)chooseTable.getModel()).getValueAt(i, 1);
+                if(selection[i]) chooseCount++;
+            } 
+            choosenSensors = new Sensors[chooseCount];
+            for(int i = 0, k = 0; i< chooseCount; i++, k++){
+                while(!selection[k]) k++;
+                choosenSensors[i] = allSensors[k];
+            } 
+            formOfSequenceTable();
+            performButton.setText("Готово");
+        }else{
+            performButton.setText("Далее");
+        }
+    }//GEN-LAST:event_performButtonActionPerformed
+
+    private void backButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_backButtonActionPerformed
+        // TODO add your handling code here:
+        formChooseSensorTable();
+        backButton.setVisible(false);
+    }//GEN-LAST:event_backButtonActionPerformed
 
     /**
      * @param args the command line arguments
@@ -160,11 +293,12 @@ public class newSetFrame extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton backButton;
     private javax.swing.JTable chooseTable;
-    private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTextField jTextField1;
+    private javax.swing.JButton performButton;
     private javax.swing.JLabel tableTitle;
     // End of variables declaration//GEN-END:variables
 }
