@@ -130,7 +130,7 @@ public class ChooseSetOfSensors extends javax.swing.JFrame {
         deleteSetButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setMinimumSize(new java.awt.Dimension(500, 300));
+        setMinimumSize(new java.awt.Dimension(560, 300));
         setPreferredSize(new java.awt.Dimension(700, 400));
         java.awt.GridBagLayout layout = new java.awt.GridBagLayout();
         layout.columnWidths = new int[] {0, 5, 0, 5, 0, 5, 0, 5, 0, 5, 0};
@@ -224,6 +224,11 @@ public class ChooseSetOfSensors extends javax.swing.JFrame {
         changeSetButton.setEnabled(false);
         changeSetButton.setMinimumSize(new java.awt.Dimension(60, 60));
         changeSetButton.setPreferredSize(new java.awt.Dimension(60, 60));
+        changeSetButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                changeSetButtonActionPerformed(evt);
+            }
+        });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 2;
         gridBagConstraints.gridy = 0;
@@ -270,8 +275,7 @@ public class ChooseSetOfSensors extends javax.swing.JFrame {
                 DataService<SetOfSensors> SetDS = new DataService(SetOfSensors.class);
                 DataService<ItemsOfSetOfSensors> ItemsDS = new DataService(ItemsOfSetOfSensors.class);
                 ForeignCollection<ItemsOfSetOfSensors> itemsCollection = el.getSensorsOfSet();
-                for (Iterator<ItemsOfSetOfSensors> it = itemsCollection.iterator(); it.hasNext();) 
-                    ItemsDS.delete(it.next());
+                ItemsDS.deleteByValue("idOfSet", el.getidOfSet());
                 SetDS.delete(el);
                 ((DefaultTableModel)contentOfTheSet.getModel()).setRowCount(0);
                 formSetTable();
@@ -284,6 +288,14 @@ public class ChooseSetOfSensors extends javax.swing.JFrame {
             }
         }
     }//GEN-LAST:event_deleteSetButtonActionPerformed
+
+    private void changeSetButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_changeSetButtonActionPerformed
+        // TODO add your handling code here:
+        JOptionPane.showMessageDialog(this,
+                                             "Вам лучше сейчас нажать на другую кнопку...",
+                                             "Сообщение",
+                                             JOptionPane.WARNING_MESSAGE);
+    }//GEN-LAST:event_changeSetButtonActionPerformed
 
     /**
      * @param args the command line arguments

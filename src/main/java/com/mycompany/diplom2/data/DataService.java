@@ -55,6 +55,12 @@ public class DataService<T> {
     }
     
     public int delete(T t) throws SQLException{
-        return dao.delete(t);
+        return dao.delete(t); 
+    }
+    
+    public void deleteByValue(String columnName, Object value) throws SQLException{
+        com.j256.ormlite.stmt.DeleteBuilder db = dao.deleteBuilder();
+        db.where().eq(columnName, value);
+        db.delete();
     }
 }

@@ -411,7 +411,7 @@ public class newSetFrame extends javax.swing.JFrame {
                                                             JOptionPane.ERROR_MESSAGE);
             else{
                 int option = JOptionPane.showConfirmDialog(newSensorFrame, 
-                                      "Вы уверены, что хотите создать набор "+setNameField.getText().trim()+"с установленнвми параметрами ?",
+                                      "Вы уверены, что хотите создать набор "+setNameField.getText().trim()+" с установленными параметрами ?",
                                       "Подтвердите действие",
                                       JOptionPane.YES_NO_CANCEL_OPTION , 
                                       JOptionPane.QUESTION_MESSAGE);
@@ -436,7 +436,7 @@ public class newSetFrame extends javax.swing.JFrame {
                         Logger.getLogger(newSetFrame.class.getName()).log(Level.SEVERE, null, ex);
                     }
                     JOptionPane.showMessageDialog(newSensorFrame,
-                                          "Набор "+setNameField.getText().trim()+" с установленнвми параметрами создан успешно!",
+                                          "Набор "+setNameField.getText().trim()+" с установленными параметрами создан успешно!",
                                           "Сообщение",
                                           JOptionPane.INFORMATION_MESSAGE);
                     this.setVisible(false);
