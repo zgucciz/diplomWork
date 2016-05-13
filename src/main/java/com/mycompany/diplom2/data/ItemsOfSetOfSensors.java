@@ -24,6 +24,11 @@ public class ItemsOfSetOfSensors {
     public ItemsOfSetOfSensors() {
     }
 
+    public ItemsOfSetOfSensors(SetOfSensors idOfSet, String sensorId) {
+        this.idOfSet = idOfSet;
+        this.sensorId = sensorId;
+    }
+
     public String getSensorId() {
         return sensorId;
     }

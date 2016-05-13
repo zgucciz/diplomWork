@@ -4,17 +4,22 @@
  */
 package com.mycompany.diplom2.data.GUI;
 
+import com.j256.ormlite.dao.ForeignCollection;
 import com.mycompany.diplom2.data.DataService;
 import com.mycompany.diplom2.data.GUI.extraWindows.newSetFrame;
+import com.mycompany.diplom2.data.ItemsOfSetOfSensors;
 import com.mycompany.diplom2.data.Sensors;
 import com.mycompany.diplom2.data.SetOfSensors;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableModel;
@@ -30,52 +35,75 @@ public class ChooseSetOfSensors extends javax.swing.JFrame {
      */
     public ChooseSetOfSensors() {
         initComponents();
+        formSetTable();
+    }
+    
+    public void formSetTable(){
+        changeSetButton.setEnabled(false);
+        deleteSetButton.setEnabled(false);
         tableOfSets.setSelectionMode(NORMAL);
-        setColumnsWidth(ContentOfTheSet);
+//        setColumnsWidth(ContentOfTheSet);
         try {
             DataService<SetOfSensors> ds;
             ds = new DataService(SetOfSensors.class);
             SetOfSensors allSets[] = ds.getAllAsArray();
-            ArrayList<Object[]> allItems = new ArrayList<Object[]>();
+//            ArrayList<Object[]> allItems = new ArrayList<Object[]>();
             int countOfSets = allSets.length; 
             if(countOfSets == 0){
                 String[] columnNames = {"Имя набора"};
                 String[] emptySet = {"Нет наборов сенсоров"};
-                allItems.add(allSets);
-                TableModel tm = new CustomTableModel<String>(allItems, columnNames);
+//                allItems.add(emptySet);
+//                TableModel tm = new CustomTableModel<String>(allItems, columnNames);
+//                tableOfSets.setModel(tm);
+                
+                DefaultTableModel tm = new DefaultTableModel();
                 tableOfSets.setModel(tm);
+                tm.addColumn(columnNames[0], emptySet);
+                
                 tableOfSets.setEnabled(false);
             }
             else{
             //тут заполняю таблицу наборами и леплю листенер
                 String[] columnNames = {"Имя набора"};
-                allItems.add(allSets);
-                TableModel tm = new CustomTableModel<SetOfSensors>(allItems, columnNames);
+//                allItems.add(allSets);
+//                TableModel tm = new CustomTableModel<SetOfSensors>(allItems, columnNames);
+//                tableOfSets.setModel(tm);
+                
+                DefaultTableModel tm = new DefaultTableModel();
                 tableOfSets.setModel(tm);
+                tm.addColumn(columnNames[0], allSets);
                 
                 tableOfSets.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
 
                     public void valueChanged(ListSelectionEvent e) {
-                        try {
-                            String[] columnNames = {"Имя сенсора", "№"};
-                            SetOfSensors el =(SetOfSensors) tableOfSets.getModel().getValueAt(tableOfSets.getSelectedRow(), 0);
-                            ArrayList<Object[]> allItems = new ArrayList<Object[]>();
-                            Sensors[] set = el.getSetAsArray();
-                            allItems.add(set);
-                            int countOfSensors = set.length;
-                            String[] nums = new String[countOfSensors];
-                            for(int i = 0; i<countOfSensors;i++)
-                                nums[i] = Integer.toString(i+1);
-                            allItems.add(nums);
-                            TableModel tm = new CustomTableModel<Sensors>(allItems, columnNames);
-                            ContentOfTheSet.setModel(tm);
-                            setColumnsWidth(ContentOfTheSet);
-                            changeSetButton.setEnabled(true);
-                        } catch (SQLException ex) {
-                            Logger.getLogger(ChooseSetOfSensors.class.getName()).log(Level.SEVERE, null, ex);
+                        if(tableOfSets.getSelectedRowCount() != 0)
+                            try {
+                                String[] columnNames = {"Имя сенсора", "№"};
+                                SetOfSensors el =(SetOfSensors) tableOfSets.getModel().getValueAt(tableOfSets.getSelectedRow(), 0);
+//                                ArrayList<Object[]> allItems = new ArrayList<Object[]>();
+                                Sensors[] set = el.getSetAsArray();
+//                                allItems.add(set);
+                                int countOfSensors = set.length;
+                                String[] nums = new String[countOfSensors];
+                                for(int i = 0; i<countOfSensors;i++)
+                                    nums[i] = Integer.toString(i+1);
+//                                allItems.add(nums);
+//                                TableModel tm = new CustomTableModel<Sensors>(allItems, columnNames);
+//                                contentOfTheSet.setModel(tm);
+//    //                            setColumnsWidth(ContentOfTheSet);
+                                
+                                DefaultTableModel tm = new DefaultTableModel();
+                                contentOfTheSet.setModel(tm);
+                                tm.addColumn(columnNames[0], set);
+                                tm.addColumn(columnNames[1], nums);
+                                
+                                changeSetButton.setEnabled(true);
+                                deleteSetButton.setEnabled(true);
+                            } catch (SQLException ex) {
+                                Logger.getLogger(ChooseSetOfSensors.class.getName()).log(Level.SEVERE, null, ex);
+                            }
                         }
-                    }
-                });
+                    });
             }
 
         } catch (SQLException ex) {
@@ -96,16 +124,16 @@ public class ChooseSetOfSensors extends javax.swing.JFrame {
         jScrollPane1 = new javax.swing.JScrollPane();
         tableOfSets = new javax.swing.JTable();
         jScrollPane2 = new javax.swing.JScrollPane();
-        ContentOfTheSet = new javax.swing.JTable();
+        contentOfTheSet = new javax.swing.JTable();
         newSetButton = new javax.swing.JButton();
         changeSetButton = new javax.swing.JButton();
+        deleteSetButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setMinimumSize(new java.awt.Dimension(500, 300));
         setPreferredSize(new java.awt.Dimension(700, 400));
-        setResizable(false);
         java.awt.GridBagLayout layout = new java.awt.GridBagLayout();
-        layout.columnWidths = new int[] {0, 5, 0};
+        layout.columnWidths = new int[] {0, 5, 0, 5, 0, 5, 0, 5, 0, 5, 0};
         layout.rowHeights = new int[] {0, 5, 0, 5, 0};
         getContentPane().setLayout(layout);
 
@@ -129,7 +157,8 @@ public class ChooseSetOfSensors extends javax.swing.JFrame {
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 0;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.gridwidth = 7;
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.ipadx = 256;
         gridBagConstraints.ipady = 309;
@@ -139,7 +168,7 @@ public class ChooseSetOfSensors extends javax.swing.JFrame {
         gridBagConstraints.insets = new java.awt.Insets(11, 10, 14, 0);
         getContentPane().add(jScrollPane1, gridBagConstraints);
 
-        ContentOfTheSet.setModel(new javax.swing.table.DefaultTableModel(
+        contentOfTheSet.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
             },
@@ -155,16 +184,16 @@ public class ChooseSetOfSensors extends javax.swing.JFrame {
                 return canEdit [columnIndex];
             }
         });
-        ContentOfTheSet.setAutoscrolls(false);
-        ContentOfTheSet.setEnabled(false);
-        ContentOfTheSet.setFocusable(false);
-        jScrollPane2.setViewportView(ContentOfTheSet);
-        ContentOfTheSet.getColumnModel().getColumn(1).setResizable(false);
-        ContentOfTheSet.getColumnModel().getColumn(1).setPreferredWidth(50);
+        contentOfTheSet.setAutoscrolls(false);
+        contentOfTheSet.setEnabled(false);
+        contentOfTheSet.setFocusable(false);
+        jScrollPane2.setViewportView(contentOfTheSet);
+        contentOfTheSet.getColumnModel().getColumn(1).setResizable(false);
+        contentOfTheSet.getColumnModel().getColumn(1).setPreferredWidth(50);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 2;
-        gridBagConstraints.gridy = 0;
+        gridBagConstraints.gridx = 10;
+        gridBagConstraints.gridy = 2;
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.ipadx = 429;
         gridBagConstraints.ipady = 309;
@@ -175,7 +204,10 @@ public class ChooseSetOfSensors extends javax.swing.JFrame {
         getContentPane().add(jScrollPane2, gridBagConstraints);
 
         newSetButton.setFont(new java.awt.Font("Tahoma", 3, 14)); // NOI18N
-        newSetButton.setText("Создать новый набор");
+        newSetButton.setIcon(new javax.swing.ImageIcon("C:\\Users\\1\\Documents\\NetBeansProjects\\Diplom2\\src\\icons\\add_60x60.png")); // NOI18N
+        newSetButton.setToolTipText("Создать новый набор");
+        newSetButton.setMinimumSize(new java.awt.Dimension(60, 60));
+        newSetButton.setPreferredSize(new java.awt.Dimension(60, 60));
         newSetButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 newSetButtonActionPerformed(evt);
@@ -183,17 +215,34 @@ public class ChooseSetOfSensors extends javax.swing.JFrame {
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 2;
+        gridBagConstraints.gridy = 0;
         getContentPane().add(newSetButton, gridBagConstraints);
 
         changeSetButton.setFont(new java.awt.Font("Tahoma", 3, 14)); // NOI18N
-        changeSetButton.setText("Изменить выбранный набор");
-        changeSetButton.setToolTipText("Сначала необходимо выбрать набор");
+        changeSetButton.setIcon(new javax.swing.ImageIcon("C:\\Users\\1\\Documents\\NetBeansProjects\\Diplom2\\src\\icons\\edit_60x60.png")); // NOI18N
+        changeSetButton.setToolTipText("Изменить выбранный набор");
         changeSetButton.setEnabled(false);
+        changeSetButton.setMinimumSize(new java.awt.Dimension(60, 60));
+        changeSetButton.setPreferredSize(new java.awt.Dimension(60, 60));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 2;
-        gridBagConstraints.gridy = 2;
+        gridBagConstraints.gridy = 0;
         getContentPane().add(changeSetButton, gridBagConstraints);
+
+        deleteSetButton.setIcon(new javax.swing.ImageIcon("C:\\Users\\1\\Documents\\NetBeansProjects\\Diplom2\\src\\icons\\Delete_60x60.png")); // NOI18N
+        deleteSetButton.setToolTipText("Удалить выбранный набор");
+        deleteSetButton.setEnabled(false);
+        deleteSetButton.setMinimumSize(new java.awt.Dimension(60, 60));
+        deleteSetButton.setPreferredSize(new java.awt.Dimension(60, 60));
+        deleteSetButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                deleteSetButtonActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 4;
+        gridBagConstraints.gridy = 0;
+        getContentPane().add(deleteSetButton, gridBagConstraints);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -208,18 +257,46 @@ public class ChooseSetOfSensors extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_newSetButtonActionPerformed
 
+    private void deleteSetButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteSetButtonActionPerformed
+        // TODO add your handling code here:
+        SetOfSensors el =(SetOfSensors) tableOfSets.getModel().getValueAt(tableOfSets.getSelectedRow(), 0);
+        int option = JOptionPane.showConfirmDialog(this, 
+                                      "Вы уверены, что хотите удалить набор "+el.getNameOfSet()+" ?",
+                                      "Подтвердите действие",
+                                      JOptionPane.YES_NO_CANCEL_OPTION , 
+                                      JOptionPane.QUESTION_MESSAGE);
+        if(option == JOptionPane.YES_OPTION){
+            try {
+                DataService<SetOfSensors> SetDS = new DataService(SetOfSensors.class);
+                DataService<ItemsOfSetOfSensors> ItemsDS = new DataService(ItemsOfSetOfSensors.class);
+                ForeignCollection<ItemsOfSetOfSensors> itemsCollection = el.getSensorsOfSet();
+                for (Iterator<ItemsOfSetOfSensors> it = itemsCollection.iterator(); it.hasNext();) 
+                    ItemsDS.delete(it.next());
+                SetDS.delete(el);
+                ((DefaultTableModel)contentOfTheSet.getModel()).setRowCount(0);
+                formSetTable();
+                JOptionPane.showMessageDialog(this,
+                                             "Удаление успешно выполнено!",
+                                             "Сообщение",
+                                             JOptionPane.INFORMATION_MESSAGE);
+            } catch (SQLException ex) {
+                Logger.getLogger(newSetFrame.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }//GEN-LAST:event_deleteSetButtonActionPerformed
+
     /**
      * @param args the command line arguments
      */
 
-    public final static void setColumnsWidth(JTable table) {
-    table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-    JTableHeader th = table.getTableHeader();
-    for (int i = 0; i < table.getColumnCount(); i++) {
-        TableColumn column = table.getColumnModel().getColumn(i);
-        int prefWidth = (i == 0? table.getWidth()-40 : 40);
-        column.setPreferredWidth(prefWidth);
-    }
+    public void setColumnsWidth(JTable table) {
+        table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+        JTableHeader th = table.getTableHeader();
+        for (int i = 0; i < table.getColumnCount(); i++) {
+            TableColumn column = table.getColumnModel().getColumn(i);
+            int prefWidth = (i == 0? table.getWidth()-40 : 40);
+            column.setPreferredWidth(prefWidth);
+        }
    }
     
       public static void run(){
@@ -229,8 +306,9 @@ public class ChooseSetOfSensors extends javax.swing.JFrame {
       }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JTable ContentOfTheSet;
     private javax.swing.JButton changeSetButton;
+    private javax.swing.JTable contentOfTheSet;
+    private javax.swing.JButton deleteSetButton;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JButton newSetButton;

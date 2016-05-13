@@ -37,6 +37,14 @@ public class SetOfSensors {
     public String getNameOfSet() {
         return nameOfSet;
     }
+    
+    public int getidOfSet() {
+        return idOfSet;
+    }
+
+    public ForeignCollection<ItemsOfSetOfSensors> getSensorsOfSet() {
+        return sensorsOfSet;
+    }
 
 
     @Override

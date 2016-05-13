@@ -42,11 +42,19 @@ public class DataService<T> {
         for (Iterator<T> it = data.iterator(); it.hasNext(); i++) {
             m[i] = it.next();
         }
-        dao.closeLastIterator();
+        dao.closeLastIterator(); 
         return m;
     }
     
     public T getElementById(String id) throws SQLException {
         return dao.queryForId(id);
+    }
+    
+    public int create(T t) throws SQLException{
+        return dao.create(t);
+    }
+    
+    public int delete(T t) throws SQLException{
+        return dao.delete(t);
     }
 }
