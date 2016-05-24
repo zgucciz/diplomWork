@@ -413,7 +413,7 @@ public class newSetFrame extends javax.swing.JFrame {
                 int option = JOptionPane.showConfirmDialog(newSensorFrame, 
                                       "Вы уверены, что хотите создать набор "+setNameField.getText().trim()+" с установленными параметрами ?",
                                       "Подтвердите действие",
-                                      JOptionPane.YES_NO_CANCEL_OPTION , 
+                                      JOptionPane.YES_NO_OPTION , 
                                       JOptionPane.QUESTION_MESSAGE);
                 if(option == JOptionPane.YES_OPTION){
                     String newSetName = setNameField.getText().trim();
@@ -466,32 +466,39 @@ public class newSetFrame extends javax.swing.JFrame {
         // TODO add your handling code here:
         String sensorFullName = sensorFullNameField.getText(),
                sensorShortName = sensorShortNameField.getText();
-        int option = JOptionPane.showConfirmDialog(newSensorFrame, 
-                                      "Вы уверены, что хотите добавить сенсор: "+sensorFullName+" ("+sensorShortName+") ?",
-                                      "Подтвердите действие",
-                                      JOptionPane.YES_NO_CANCEL_OPTION , 
-                                      JOptionPane.QUESTION_MESSAGE);
-        if(option == JOptionPane.YES_OPTION){
-            Sensors newSensor = new Sensors(sensorFullName, sensorShortName); 
-            try {
-                DataService<Sensors> ds = new DataService(Sensors.class);
-                ds.create(newSensor);
-                allSensors = ds.getAllAsArray();
-            } catch (SQLException ex) {
-                Logger.getLogger(newSetFrame.class.getName()).log(Level.SEVERE, null, ex);
+        if(sensorFullName.trim().isEmpty() || sensorShortName.trim().isEmpty())
+            JOptionPane.showMessageDialog(newSensorFrame, 
+                                          "Поля с именем сенсора не должны быть пустыми!", 
+                                          "Ошибка", 
+                                        JOptionPane.ERROR_MESSAGE);
+        else{
+            int option = JOptionPane.showConfirmDialog(newSensorFrame, 
+                                          "Вы уверены, что хотите добавить сенсор: "+sensorFullName+" ("+sensorShortName+") ?",
+                                          "Подтвердите действие",
+                                          JOptionPane.YES_NO_OPTION , 
+                                          JOptionPane.QUESTION_MESSAGE);
+            if(option == JOptionPane.YES_OPTION){
+                Sensors newSensor = new Sensors(sensorFullName, sensorShortName); 
+                try {
+                    DataService<Sensors> ds = new DataService(Sensors.class);
+                    ds.create(newSensor);
+                    allSensors = ds.getAllAsArray();
+                } catch (SQLException ex) {
+                    Logger.getLogger(newSetFrame.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                newSensorFrame.setVisible(false);
+                int countRow = allSensors.length;
+                Boolean[] newSelection = new Boolean[countRow];
+                for(int i =0; i<countRow-1; i++) newSelection[i] = selection[i];
+                newSelection[countRow-1] = false;
+                selection = newSelection;
+                formChooseSensorTable();
+                this.setState(JFrame.NORMAL);
+                JOptionPane.showMessageDialog(newSensorFrame,
+                                              "Сенсор "+sensorFullName+" ("+sensorShortName+") добавлен успешно!",
+                                              "Сообщение",
+                                              JOptionPane.INFORMATION_MESSAGE);
             }
-            newSensorFrame.setVisible(false);
-            int countRow = allSensors.length;
-            Boolean[] newSelection = new Boolean[countRow];
-            for(int i =0; i<countRow-1; i++) newSelection[i] = selection[i];
-            newSelection[countRow-1] = false;
-            selection = newSelection;
-            formChooseSensorTable();
-            this.setState(JFrame.NORMAL);
-            JOptionPane.showMessageDialog(newSensorFrame,
-                                          "Сенсор "+sensorFullName+" ("+sensorShortName+") добавлен успешно!",
-                                          "Сообщение",
-                                          JOptionPane.INFORMATION_MESSAGE);
         }
     }//GEN-LAST:event_addSensorButtonActionPerformed
 
@@ -518,7 +525,7 @@ public class newSetFrame extends javax.swing.JFrame {
             int option = JOptionPane.showConfirmDialog(this, 
                                       message+choosenSensors[chooseCount-1]+" ?",
                                       "Подтвердите действие",
-                                      JOptionPane.YES_NO_CANCEL_OPTION , 
+                                      JOptionPane.YES_NO_OPTION , 
                                       JOptionPane.QUESTION_MESSAGE);
         if(option == JOptionPane.YES_OPTION){
             try {
@@ -544,8 +551,15 @@ public class newSetFrame extends javax.swing.JFrame {
 
     private void cancelButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelButtonActionPerformed
         // TODO add your handling code here:
-        this.setVisible(false);
-        ChooseSetOfSensors.run();
+        int option = JOptionPane.showConfirmDialog(this, 
+                                      "Вы уверены, что хотите отменить создание набора?",
+                                      "Подтвердите действие",
+                                      JOptionPane.YES_NO_OPTION , 
+                                      JOptionPane.QUESTION_MESSAGE);
+        if(option == JOptionPane.YES_OPTION){
+            this.setVisible(false);
+            ChooseSetOfSensors.run();
+        }
     }//GEN-LAST:event_cancelButtonActionPerformed
 
     /**

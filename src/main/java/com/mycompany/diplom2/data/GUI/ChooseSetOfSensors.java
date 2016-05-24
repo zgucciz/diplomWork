@@ -41,6 +41,8 @@ public class ChooseSetOfSensors extends javax.swing.JFrame {
     public void formSetTable(){
         changeSetButton.setEnabled(false);
         deleteSetButton.setEnabled(false);
+        readyButton.setEnabled(false);
+        
         tableOfSets.setSelectionMode(NORMAL);
 //        setColumnsWidth(ContentOfTheSet);
         try {
@@ -99,6 +101,7 @@ public class ChooseSetOfSensors extends javax.swing.JFrame {
                                 
                                 changeSetButton.setEnabled(true);
                                 deleteSetButton.setEnabled(true);
+                                readyButton.setEnabled(true);
                             } catch (SQLException ex) {
                                 Logger.getLogger(ChooseSetOfSensors.class.getName()).log(Level.SEVERE, null, ex);
                             }
@@ -128,12 +131,13 @@ public class ChooseSetOfSensors extends javax.swing.JFrame {
         newSetButton = new javax.swing.JButton();
         changeSetButton = new javax.swing.JButton();
         deleteSetButton = new javax.swing.JButton();
+        readyButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setMinimumSize(new java.awt.Dimension(560, 300));
         setPreferredSize(new java.awt.Dimension(700, 400));
         java.awt.GridBagLayout layout = new java.awt.GridBagLayout();
-        layout.columnWidths = new int[] {0, 5, 0, 5, 0, 5, 0, 5, 0, 5, 0};
+        layout.columnWidths = new int[] {0, 5, 0, 5, 0, 5, 0, 5, 0, 5, 0, 5, 0};
         layout.rowHeights = new int[] {0, 5, 0, 5, 0};
         getContentPane().setLayout(layout);
 
@@ -192,7 +196,7 @@ public class ChooseSetOfSensors extends javax.swing.JFrame {
         contentOfTheSet.getColumnModel().getColumn(1).setPreferredWidth(50);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 10;
+        gridBagConstraints.gridx = 12;
         gridBagConstraints.gridy = 2;
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.ipadx = 429;
@@ -249,6 +253,20 @@ public class ChooseSetOfSensors extends javax.swing.JFrame {
         gridBagConstraints.gridy = 0;
         getContentPane().add(deleteSetButton, gridBagConstraints);
 
+        readyButton.setFont(new java.awt.Font("Tahoma", 3, 18)); // NOI18N
+        readyButton.setText("Готово");
+        readyButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                readyButtonActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 12;
+        gridBagConstraints.gridy = 4;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+        gridBagConstraints.insets = new java.awt.Insets(0, 0, 5, 5);
+        getContentPane().add(readyButton, gridBagConstraints);
+
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
@@ -268,7 +286,7 @@ public class ChooseSetOfSensors extends javax.swing.JFrame {
         int option = JOptionPane.showConfirmDialog(this, 
                                       "Вы уверены, что хотите удалить набор "+el.getNameOfSet()+" ?",
                                       "Подтвердите действие",
-                                      JOptionPane.YES_NO_CANCEL_OPTION , 
+                                      JOptionPane.YES_NO_OPTION , 
                                       JOptionPane.QUESTION_MESSAGE);
         if(option == JOptionPane.YES_OPTION){
             try {
@@ -297,6 +315,13 @@ public class ChooseSetOfSensors extends javax.swing.JFrame {
                                              JOptionPane.WARNING_MESSAGE);
     }//GEN-LAST:event_changeSetButtonActionPerformed
 
+    private void readyButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_readyButtonActionPerformed
+        // TODO add your handling code here:
+        this.setVisible(false);
+        SetOfSensors el =(SetOfSensors) tableOfSets.getModel().getValueAt(tableOfSets.getSelectedRow(), 0);
+        EnterValuesOfSensorsReactions.run(el);
+    }//GEN-LAST:event_readyButtonActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -324,6 +349,7 @@ public class ChooseSetOfSensors extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JButton newSetButton;
+    private javax.swing.JButton readyButton;
     private javax.swing.JTable tableOfSets;
     // End of variables declaration//GEN-END:variables
 }
